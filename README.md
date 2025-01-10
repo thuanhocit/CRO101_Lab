@@ -1,6 +1,6 @@
 # Xin chào, tôi là Thuận 👋
 
-![Lượt xem hồ sơ](https://www.tiktok.com/@thuan.hoc.it)
+![Lượt xem hồ sơ](https://komarev.com/ghpvc/?username=thuanhocit)
 
 ## 🚀 Giới thiệu về tôi
 
