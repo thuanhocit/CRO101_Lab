@@ -38,6 +38,6 @@ Tôi luôn sẵn lòng thảo luận về các dự án mới, ý tưởng sáng
 
 ## 🌐 Kết nối mạng xã hội
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/thuan-hoc-it-6682862a0/)
+[![TikTok](https://img.shields.io/badge/TikTok-000000?style=for-the-badge&logo=tiktok&logoColor=white)](https://www.tiktok.com/@thuan.hoc.it)
 [![Facebook](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/thuan.hoc.it/)
 [![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/thuan.hoc.it/)
