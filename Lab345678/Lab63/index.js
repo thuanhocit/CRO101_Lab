@@ -3,6 +3,9 @@ import { createStackNavigator } from "@react-navigation/stack"
 import { createDrawerNavigator } from "@react-navigation/drawer"
 import HomeScreen from "./screens/HomeScreen"
 import DetailsScreen from "./screens/DetailsScreen"
+import ProfileScreen from "./screens/ProfileScreen"
+import SettingsScreen from "./screens/SettingsScreen"
+import HelpScreen from "./screens/HelpScreen"
 import CustomDrawerContent from "./components/CustomDrawerContent"
 import { Ionicons } from "@expo/vector-icons"
 
@@ -35,21 +38,21 @@ function DrawerNavigator() {
             />
             <Drawer.Screen
                 name="Profile"
-                component={HomeScreen}
+                component={ProfileScreen}
                 options={{
                     drawerIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
                 }}
             />
             <Drawer.Screen
                 name="Settings"
-                component={HomeScreen}
+                component={SettingsScreen}
                 options={{
                     drawerIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />,
                 }}
             />
             <Drawer.Screen
                 name="Help"
-                component={HomeScreen}
+                component={HelpScreen}
                 options={{
                     drawerIcon: ({ color, size }) => <Ionicons name="help-circle-outline" size={size} color={color} />,
                 }}
