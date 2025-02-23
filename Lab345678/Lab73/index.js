@@ -3,64 +3,208 @@
 import { useState } from "react"
 import { NavigationContainer } from "@react-navigation/native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"
+import { createStackNavigator } from "@react-navigation/stack"
 import { View, Text, StyleSheet, Image, ScrollView, Switch, TouchableOpacity } from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 import { Checkbox } from "react-native-paper"
 
 const BottomTab = createBottomTabNavigator()
-const TopTab = createMaterialTopTabNavigator()
+const Stack = createStackNavigator()
 
-// Album data for Home screen
-const albumImages = [
-  {
-    id: 1,
-    title: "Nature",
-    image: "https://i.pinimg.com/736x/81/a9/20/81a9205e0aa17f59c5e2ed37c6a3c69a.jpg",
-    count: 12,
-  },
-  {
-    id: 2,
-    title: "Travel",
-    image: "https://i.pinimg.com/736x/ef/fd/25/effd252f09c9f9cc335bda4f6200d3db.jpg",
-    count: 8,
-  },
-  {
-    id: 3,
-    title: "Food",
-    image: "https://i.pinimg.com/736x/db/00/9e/db009e71d45d658dd87fb8ce9765016b.jpg",
-    count: 15,
-  },
-  {
-    id: 4,
-    title: "Architecture",
-    image:  "https://i.pinimg.com/736x/fa/8e/27/fa8e27309f60deaffb3ccfacbbb88d52.jpg",
-    count: 10,
-  },
-  {
-    id: 5,
-    title: "People",
-    image: "https://i.pinimg.com/736x/17/80/08/178008bff8caf229ee594dc061c0ff4e.jpg",
-    count: 6,
-  },
-  {
-    id: 6,
-    title: "Animals",
-    image: "https://i.pinimg.com/736x/14/ba/ff/14baff7e65b68fc7c3b38d1139f161f4.jpg",
-    count: 9,
-  },
-]
+// Album data with multiple categories
+const albumCategories = {
+  "Giày Nike": [
+    {
+      id: 1,
+      image:
+        "https://i.pinimg.com/736x/3f/5e/b8/3f5eb87551d2303276b16c5094c1141e.jpg",
+    },
+    {
+      id: 2,
+      image:
+        "https://i.pinimg.com/736x/2d/e1/cb/2de1cb31bc3d6863b0f84f67ae2586a9.jpg",
+    },
+    {
+      id: 3,
+      image:
+        "https://i.pinimg.com/736x/34/d1/91/34d1911a6d32e6bd1d2cddbb741382f8.jpg",
+    },
+    {
+      id: 4,
+      image:
+        "https://i.pinimg.com/736x/2f/52/e6/2f52e69417090ff5ccb5eec379b78e65.jpg",
+    },
+  ],
+  "Giày Adidas": [
+    {
+      id: 5,
+      image:
+        "https://i.pinimg.com/736x/e6/32/b7/e632b75298714391f215d67a01aa7f22.jpg",
+    },
+    {
+      id: 6,
+      image:
+        "https://i.pinimg.com/736x/4a/88/1e/4a881e7cfe84f52c20c3a329f6fc49e1.jpg",
+    },
+    {
+      id: 7,
+      image:
+        "https://i.pinimg.com/736x/e5/90/b7/e590b7fe501d790721801397f9be05cf.jpg",
+    },
+    {
+      id: 8,
+      image:
+        "https://i.pinimg.com/736x/a9/eb/4f/a9eb4fc7216a96bf07146e20093955f5.jpg",
+    },
+  ],
+  "Giày Thể Thao": [
+    {
+      id: 9,
+      image:
+        "https://i.pinimg.com/736x/0a/10/61/0a1061ffd74ee7507e42c98c72c1e7cf.jpg",
+    },
+    {
+      id: 10,
+      image:
+        "https://i.pinimg.com/736x/b1/65/03/b16503e15be8f59538876aaf9ad7ba2d.jpg",
+    },
+    {
+      id: 11,
+      image:
+        "https://i.pinimg.com/736x/6d/27/9a/6d279a424a212e96eb7e1b581137ca39.jpg",
+    },
+    {
+      id: 12,
+      image:
+        "https://i.pinimg.com/736x/51/a0/0b/51a00b6fc736f129190acbd1006323d9.jpg",
+    },
+  ],
+  "Giày Thời Trang": [
+    {
+      id: 13,
+      image:
+        "https://i.pinimg.com/736x/fc/e6/eb/fce6ebcf1e16f3934fd56a098a7840f4.jpg",
+    },
+    {
+      id: 14,
+      image:
+        "https://i.pinimg.com/736x/43/0f/4a/430f4a02727366db2582fc22284317cc.jpg",
+    },
+    {
+      id: 15,
+      image:
+        "https://i.pinimg.com/736x/53/4d/a9/534da9e981c5681ebd66002572361fcb.jpg",
+    },
+    {
+      id: 16,
+      image:
+        "https://i.pinimg.com/736x/04/6f/d4/046fd4e13d6504d5df1ab5a7c6f0ccad.jpg",
+    },
+  ],
+  "Giày Đặc Biệt": [
+    {
+      id: 17,
+      image:
+        "https://i.pinimg.com/736x/63/37/81/633781f9873aceb31d509d4b7dc7cd17.jpg",
+    },
+    {
+      id: 18,
+      image:
+        "https://i.pinimg.com/736x/2e/9a/42/2e9a424172d5bbf80cf07f11a0280bf6.jpg",
+    },
+    {
+      id: 19,
+      image:
+        "https://i.pinimg.com/736x/0f/77/bb/0f77bb6f5c52193a74e9049da00a03cf.jpg",
+    },
+    {
+      id: 20,
+      image:
+        "https://i.pinimg.com/736x/ac/4a/10/ac4a10acf310580507ffd9886762ddd7.jpg",
+    },
+  ],
+}
 
-const HomeScreen = () => {
+const CollectionScreen = ({ route }) => {
+  const [selectedCategory, setSelectedCategory] = useState(Object.keys(albumCategories)[0])
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.categoryMenuContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.categoryMenu}
+          contentContainerStyle={styles.categoryMenuContent}
+        >
+          {Object.keys(albumCategories).map((category) => (
+            <TouchableOpacity
+              key={category}
+              style={[styles.categoryButton, selectedCategory === category && styles.categoryButtonActive]}
+              onPress={() => setSelectedCategory(category)}
+            >
+              <Text
+                style={[styles.categoryButtonText, selectedCategory === category && styles.categoryButtonTextActive]}
+              >
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      <ScrollView style={styles.container}>
+        <View style={styles.imageGrid}>
+          {albumCategories[selectedCategory].map((item) => (
+            <View key={item.id} style={styles.imageCard}>
+              <Image source={{ uri: item.image }} style={styles.detailImage} />
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  )
+}
+
+const AlbumDetailScreen = ({ route }) => {
+  const { title, images } = route.params
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.headerTitle}>My Albums</Text>
+      <Text style={styles.headerTitle}>{title}</Text>
+      <View style={styles.imageGrid}>
+        {images.map((item) => (
+          <View key={item.id} style={styles.imageCard}>
+            <Image source={{ uri: item.image }} style={styles.detailImage} />
+          </View>
+        ))}
+      </View>
+    </ScrollView>
+  )
+}
+
+const HomeScreen = ({ navigation }) => {
+  const albums = Object.keys(albumCategories).map((category, index) => ({
+    id: index + 1,
+    title: category,
+    image: albumCategories[category][0].image,
+    count: albumCategories[category].length,
+  }))
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.headerTitle}>Bộ Sưu Tập Giày</Text>
       <View style={styles.albumGrid}>
-        {albumImages.map((album) => (
+        {albums.map((album) => (
           <TouchableOpacity
             key={album.id}
             style={styles.albumCard}
-            onPress={() => console.log(`Album ${album.title} pressed`)}
+            onPress={() =>
+              navigation.navigate("AlbumDetail", {
+                title: album.title,
+                images: albumCategories[album.title],
+              })
+            }
           >
             <Image source={{ uri: album.image }} style={styles.albumImage} />
             <View style={styles.albumInfo}>
@@ -77,7 +221,7 @@ const HomeScreen = () => {
 const ProfileScreen = () => (
   <View style={styles.profileContainer}>
     <View style={styles.profileHeader}>
-      <Image source={{ uri:  "https://i.pinimg.com/736x/14/ba/ff/14baff7e65b68fc7c3b38d1139f161f4.jpg", }} style={styles.avatar} />
+      <Image source={{ uri: "https://picsum.photos/id/1025/150/150" }} style={styles.avatar} />
       <View style={styles.profileInfo}>
         <Text style={styles.profileName}>John Doe</Text>
         <Text style={styles.profileAge}>Age: 28</Text>
@@ -128,61 +272,11 @@ const SettingsScreen = () => {
   )
 }
 
-// Top Tab Screens
-const Tab1Content = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.tabTitle}>Tab 1 Content</Text>
-    <Image source={{ uri:  "https://i.pinimg.com/736x/fa/8e/27/fa8e27309f60deaffb3ccfacbbb88d52.jpg" }} style={styles.tabImage} />
-  </View>
-)
-
-const Tab2Content = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.tabTitle}>Tab 2 Content</Text>
-    <Image source={{ uri:  "https://i.pinimg.com/736x/fa/8e/27/fa8e27309f60deaffb3ccfacbbb88d52.jpg" }} style={styles.tabImage} />
-  </View>
-)
-
-const Tab3Content = () => (
-  <View style={styles.tabContent}>
-    <Text style={styles.tabTitle}>Tab 3 Content</Text>
-    <Image source={{ uri: "https://i.pinimg.com/736x/81/a9/20/81a9205e0aa17f59c5e2ed37c6a3c69a.jpg" }} style={styles.tabImage} />
-  </View>
-)
-
-const TopTabScreen = () => (
-  <TopTab.Navigator
-    screenOptions={{
-      tabBarStyle: styles.topTabBar,
-      tabBarIndicatorStyle: styles.tabBarIndicator,
-      tabBarLabelStyle: styles.topTabLabel,
-    }}
-  >
-    <TopTab.Screen
-      name="Tab1"
-      component={Tab1Content}
-      options={{
-        tabBarLabel: "Tab 1",
-        tabBarIcon: ({ color }) => <Icon name="home-outline" size={20} color={color} />,
-      }}
-    />
-    <TopTab.Screen
-      name="Tab2"
-      component={Tab2Content}
-      options={{
-        tabBarLabel: "Tab 2",
-        tabBarIcon: ({ color }) => <Icon name="person-outline" size={20} color={color} />,
-      }}
-    />
-    <TopTab.Screen
-      name="Tab3"
-      component={Tab3Content}
-      options={{
-        tabBarLabel: "Tab 3",
-        tabBarIcon: ({ color }) => <Icon name="settings-outline" size={20} color={color} />,
-      }}
-    />
-  </TopTab.Navigator>
+const HomeStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Albums" component={HomeScreen} />
+    <Stack.Screen name="AlbumDetail" component={AlbumDetailScreen} />
+  </Stack.Navigator>
 )
 
 const Bai3_CombinedTabs = () => {
@@ -199,8 +293,8 @@ const Bai3_CombinedTabs = () => {
               iconName = focused ? "person" : "person-outline"
             } else if (route.name === "Settings") {
               iconName = focused ? "settings" : "settings-outline"
-            } else if (route.name === "TopTabs") {
-              iconName = focused ? "apps" : "apps-outline"
+            } else if (route.name === "Collection") {
+              iconName = focused ? "images" : "images-outline"
             }
 
             return <Icon name={iconName} size={size} color={color} />
@@ -212,16 +306,51 @@ const Bai3_CombinedTabs = () => {
           tabBarLabelPosition: "beside-icon",
         })}
       >
-        <BottomTab.Screen name="Home" component={HomeScreen} />
+        <BottomTab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
+        <BottomTab.Screen name="Collection" component={CollectionScreen} />
         <BottomTab.Screen name="Profile" component={ProfileScreen} />
         <BottomTab.Screen name="Settings" component={SettingsScreen} />
-        <BottomTab.Screen name="TopTabs" component={TopTabScreen} />
       </BottomTab.Navigator>
     </NavigationContainer>
   )
 }
 
 const styles = StyleSheet.create({
+  categoryMenuContainer: {
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  categoryMenu: {
+    paddingVertical: 12,
+  },
+  categoryMenuContent: {
+    paddingHorizontal: 16,
+  },
+  categoryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginRight: 12,
+    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
+  },
+  categoryButtonActive: {
+    backgroundColor: "#007AFF",
+  },
+  categoryButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+  },
+  categoryButtonTextActive: {
+    color: "#fff",
+  },
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
@@ -270,6 +399,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginTop: 4,
+  },
+  imageGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    padding: 8,
+    justifyContent: "space-between",
+  },
+  imageCard: {
+    width: "48%",
+    marginBottom: 16,
+    backgroundColor: "white",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  detailImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 12,
   },
   profileContainer: {
     flex: 1,
@@ -365,7 +519,7 @@ const styles = StyleSheet.create({
   },
   tabImage: {
     width: "100%",
-    height: 350,
+    height: 200,
     borderRadius: 10,
   },
 })
