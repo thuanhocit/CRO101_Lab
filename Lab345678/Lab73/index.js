@@ -1,12 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { NavigationContainer } from "@react-navigation/native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { createStackNavigator } from "@react-navigation/stack"
-import { View, Text, StyleSheet, Image, ScrollView, Switch, TouchableOpacity } from "react-native"
+import { View, Text, StyleSheet, Image, ScrollView, Switch, TouchableOpacity, Dimensions } from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 import { Checkbox } from "react-native-paper"
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  Easing,
+} from "react-native-reanimated"
 
 const BottomTab = createBottomTabNavigator()
 const Stack = createStackNavigator()
@@ -127,17 +135,43 @@ const albumCategories = {
 
 const CollectionScreen = ({ route }) => {
   const [selectedCategory, setSelectedCategory] = useState(Object.keys(albumCategories)[0])
+  const categories = Object.keys(albumCategories)
+  const { width } = Dimensions.get("window")
+
+  const translateX = useSharedValue(0)
+  const opacity = useSharedValue(1)
+
+  useEffect(() => {
+    translateX.value = withRepeat(
+      withSequence(withTiming(-width, { duration: 20000, easing: Easing.linear }), withTiming(0, { duration: 0 })),
+      -1,
+      false,
+    )
+
+    opacity.value = withRepeat(
+      withSequence(withTiming(0.6, { duration: 2000 }), withTiming(1, { duration: 2000 })),
+      -1,
+      true,
+    )
+  }, [width, translateX, opacity])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    }
+  })
+
+  const fadeStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    }
+  })
 
   return (
     <View style={styles.container}>
-      <View style={styles.categoryMenuContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryMenu}
-          contentContainerStyle={styles.categoryMenuContent}
-        >
-          {Object.keys(albumCategories).map((category) => (
+      <Animated.View style={[styles.categoryMenuContainer, fadeStyle]}>
+        <Animated.View style={[styles.categoryMenuContent, animatedStyle]}>
+          {categories.map((category, index) => (
             <TouchableOpacity
               key={category}
               style={[styles.categoryButton, selectedCategory === category && styles.categoryButtonActive]}
@@ -150,8 +184,8 @@ const CollectionScreen = ({ route }) => {
               </Text>
             </TouchableOpacity>
           ))}
-        </ScrollView>
-      </View>
+        </Animated.View>
+      </Animated.View>
 
       <ScrollView style={styles.container}>
         <View style={styles.imageGrid}>
@@ -221,18 +255,18 @@ const HomeScreen = ({ navigation }) => {
 const ProfileScreen = () => (
   <View style={styles.profileContainer}>
     <View style={styles.profileHeader}>
-      <Image source={{ uri: "https://picsum.photos/id/1025/150/150" }} style={styles.avatar} />
+      <Image source={{ uri: "https://i.imgur.com/7lsPp45.jpeg" }} style={styles.avatar} />
       <View style={styles.profileInfo}>
-        <Text style={styles.profileName}>John Doe</Text>
-        <Text style={styles.profileAge}>Age: 28</Text>
+        <Text style={styles.profileName}>HO XUAN THUAN</Text>
+        <Text style={styles.profileAge}>Age: 20</Text>
       </View>
     </View>
     <View style={styles.interestsContainer}>
       <Text style={styles.interestsTitle}>Interests:</Text>
       <View style={styles.interestsList}>
         <Text style={styles.interestItem}>🎨 Art</Text>
-        <Text style={styles.interestItem}>🏋️ Fitness</Text>
-        <Text style={styles.interestItem}>📚 Reading</Text>
+        <Text style={styles.interestItem}>🥋 Martial arts</Text>
+        <Text style={styles.interestItem}>📸 Landscape photography</Text>
         <Text style={styles.interestItem}>✈️ Travel</Text>
       </View>
     </View>
@@ -326,11 +360,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  },
-  categoryMenu: {
-    paddingVertical: 12,
+    overflow: "hidden",
   },
   categoryMenuContent: {
+    flexDirection: "row",
+    paddingVertical: 12,
     paddingHorizontal: 16,
   },
   categoryButton: {
@@ -339,6 +373,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
     borderRadius: 20,
     backgroundColor: "#f0f0f0",
+    minWidth: 100,
+    alignItems: "center",
   },
   categoryButtonActive: {
     backgroundColor: "#007AFF",
@@ -443,7 +479,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   profileName: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
   },
   profileAge: {

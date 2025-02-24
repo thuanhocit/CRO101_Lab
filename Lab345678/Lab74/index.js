@@ -4,7 +4,17 @@ import { useState, useEffect } from "react"
 import { NavigationContainer } from "@react-navigation/native"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { createStackNavigator } from "@react-navigation/stack"
-import { View, Text, StyleSheet, Image, ScrollView, Switch, TouchableOpacity, Dimensions } from "react-native"
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  Switch,
+  TouchableOpacity,
+  Dimensions,
+  TextInput,
+} from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 import { Checkbox } from "react-native-paper"
 import Animated, {
@@ -134,7 +144,15 @@ const albumCategories = {
 }
 
 const CollectionScreen = ({ route }) => {
-  const [selectedCategory, setSelectedCategory] = useState(Object.keys(albumCategories)[0])
+  const [selectedCategory, setSelectedCategory] = useState(
+    route.params?.selectedCategory || Object.keys(albumCategories)[0],
+  )
+
+  useEffect(() => {
+    if (route.params?.selectedCategory) {
+      setSelectedCategory(route.params.selectedCategory)
+    }
+  }, [route.params?.selectedCategory])
   const categories = Object.keys(albumCategories)
   const { width } = Dimensions.get("window")
 
@@ -142,6 +160,9 @@ const CollectionScreen = ({ route }) => {
   const opacity = useSharedValue(1)
 
   useEffect(() => {
+    translateX.value = 0
+    opacity.value = 1
+
     translateX.value = withRepeat(
       withSequence(withTiming(-width, { duration: 20000, easing: Easing.linear }), withTiming(0, { duration: 0 })),
       -1,
@@ -200,23 +221,6 @@ const CollectionScreen = ({ route }) => {
   )
 }
 
-const AlbumDetailScreen = ({ route }) => {
-  const { title, images } = route.params
-
-  return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.headerTitle}>{title}</Text>
-      <View style={styles.imageGrid}>
-        {images.map((item) => (
-          <View key={item.id} style={styles.imageCard}>
-            <Image source={{ uri: item.image }} style={styles.detailImage} />
-          </View>
-        ))}
-      </View>
-    </ScrollView>
-  )
-}
-
 const HomeScreen = ({ navigation }) => {
   const albums = Object.keys(albumCategories).map((category, index) => ({
     id: index + 1,
@@ -233,12 +237,7 @@ const HomeScreen = ({ navigation }) => {
           <TouchableOpacity
             key={album.id}
             style={styles.albumCard}
-            onPress={() =>
-              navigation.navigate("AlbumDetail", {
-                title: album.title,
-                images: albumCategories[album.title],
-              })
-            }
+            onPress={() => navigation.navigate("Collection", { selectedCategory: album.title })}
           >
             <Image source={{ uri: album.image }} style={styles.albumImage} />
             <View style={styles.albumInfo}>
@@ -252,26 +251,83 @@ const HomeScreen = ({ navigation }) => {
   )
 }
 
-const ProfileScreen = () => (
-  <View style={styles.profileContainer}>
-    <View style={styles.profileHeader}>
-      <Image source={{ uri: "https://picsum.photos/id/1025/150/150" }} style={styles.avatar} />
-      <View style={styles.profileInfo}>
-        <Text style={styles.profileName}>John Doe</Text>
-        <Text style={styles.profileAge}>Age: 28</Text>
-      </View>
+const ProfileScreen = () => {
+  const [isEditing, setIsEditing] = useState(false)
+  const [name, setName] = useState("John Doe")
+  const [age, setAge] = useState("28")
+
+  const handleSave = () => {
+    setIsEditing(false)
+  }
+
+  const interests = [
+    { emoji: "🎨", label: "Art" },
+    { emoji: "🥋", label: "Martial arts" },
+    { emoji: "📸", label: "Landscape photography" },
+    { emoji: "✈️", label: "Travel" },
+  ]
+
+  return (
+    <View style={styles.profileContainer}>
+      <ScrollView style={styles.profileContent} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.profileImageContainer}>
+          <Image source={{ uri: "https://i.imgur.com/7lsPp45.jpeg" }} style={styles.avatar} />
+        </View>
+
+        <View style={styles.formContainer}>
+          {isEditing ? (
+            <>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder="Name"
+                placeholderTextColor="#999"
+              />
+              <TextInput
+                style={styles.input}
+                value={age}
+                onChangeText={setAge}
+                placeholder="Age"
+                keyboardType="numeric"
+                placeholderTextColor="#999"
+              />
+              <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                <Text style={styles.saveButtonText}>Save Changes</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <View style={styles.profileInfo}>
+              <Text style={styles.profileName}>{name}</Text>
+              <Text style={styles.profileAge}>Age: {age}</Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.interestsContainer}>
+          <Text style={styles.interestsTitle}>Interests:</Text>
+          <View style={styles.interestsList}>
+            {interests.map((interest, index) => (
+              <View key={index} style={styles.interestItem}>
+                <Text style={styles.interestEmoji}>{interest.emoji}</Text>
+                <Text style={styles.interestLabel}>{interest.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+
+      <TouchableOpacity
+        style={[styles.editButton, isEditing && styles.cancelButton]}
+        onPress={() => setIsEditing(!isEditing)}
+      >
+        <Text style={[styles.editButtonText, isEditing && styles.cancelButtonText]}>
+          {isEditing ? "Cancel" : "Edit Profile"}
+        </Text>
+      </TouchableOpacity>
     </View>
-    <View style={styles.interestsContainer}>
-      <Text style={styles.interestsTitle}>Interests:</Text>
-      <View style={styles.interestsList}>
-        <Text style={styles.interestItem}>🎨 Art</Text>
-        <Text style={styles.interestItem}>🏋️ Fitness</Text>
-        <Text style={styles.interestItem}>📚 Reading</Text>
-        <Text style={styles.interestItem}>✈️ Travel</Text>
-      </View>
-    </View>
-  </View>
-)
+  )
+}
 
 const SettingsScreen = () => {
   const [isDarkMode, setIsDarkMode] = useState(false)
@@ -302,6 +358,17 @@ const SettingsScreen = () => {
         <Text style={styles.settingLabel}>Silent Mode</Text>
         <Checkbox status={isSilent ? "checked" : "unchecked"} onPress={() => setIsSilent(!isSilent)} />
       </View>
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => {
+          // Add logout logic here
+          console.log("Logout pressed")
+          // You would typically clear user session, tokens, etc.
+          // Then navigate to login screen or home screen
+        }}
+      >
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -309,11 +376,10 @@ const SettingsScreen = () => {
 const HomeStack = () => (
   <Stack.Navigator>
     <Stack.Screen name="Albums" component={HomeScreen} />
-    <Stack.Screen name="AlbumDetail" component={AlbumDetailScreen} />
   </Stack.Navigator>
 )
 
-const Bai3_CombinedTabs = () => {
+const Bai3_CombinedTabs = ({ navigation }) => {
   return (
     <NavigationContainer>
       <BottomTab.Navigator
@@ -341,7 +407,18 @@ const Bai3_CombinedTabs = () => {
         })}
       >
         <BottomTab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-        <BottomTab.Screen name="Collection" component={CollectionScreen} />
+        <BottomTab.Screen
+          name="Collection"
+          component={CollectionScreen}
+          options={({ navigation }) => ({
+            tabBarButton: (props) => (
+              <TouchableOpacity
+                {...props}
+                onPress={() => navigation.navigate("Collection", { selectedCategory: null })}
+              />
+            ),
+          })}
+        />
         <BottomTab.Screen name="Profile" component={ProfileScreen} />
         <BottomTab.Screen name="Settings" component={SettingsScreen} />
       </BottomTab.Navigator>
@@ -463,47 +540,165 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flex: 1,
-    padding: 20,
+    backgroundColor: "#f5f5f5",
   },
-  profileHeader: {
-    flexDirection: "row",
+  scrollContent: {
+    paddingBottom: 100,
+  },
+  profileContent: {
+    flex: 1,
+  },
+  profileImageContainer: {
     alignItems: "center",
+    marginTop: 30,
     marginBottom: 20,
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  formContainer: {
+    paddingHorizontal: 20,
   },
   profileInfo: {
-    marginLeft: 20,
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  input: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 15,
+    fontSize: 16,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   profileName: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 5,
+    textAlign: "center",
   },
   profileAge: {
     fontSize: 18,
-    color: "gray",
+    color: "#666",
+    textAlign: "center",
   },
   interestsContainer: {
-    marginTop: 20,
+    padding: 20,
   },
   interestsTitle: {
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 15,
   },
   interestsList: {
     flexDirection: "row",
     flexWrap: "wrap",
+    marginHorizontal: -5,
   },
   interestItem: {
-    fontSize: 16,
-    backgroundColor: "#f0f0f0",
-    padding: 10,
-    margin: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     borderRadius: 20,
+    margin: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  interestEmoji: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  interestLabel: {
+    fontSize: 16,
+    color: "#333",
+  },
+  editButton: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  cancelButton: {
+    backgroundColor: "#007AFF",
+    margin: 10,
+  },
+  editButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  cancelButtonText: {
+    color: "#fff",
+  },
+  saveButton: {
+    backgroundColor: "#4CD964",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
   settingsContainer: {
     flex: 1,
@@ -557,6 +752,53 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     borderRadius: 10,
+  },
+  logoutButton: {
+    backgroundColor: "#ff3b30",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  logoutButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  editButtonContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+  editButton: {
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    margin: 10,
+  },
+  profileContent: {
+    flex: 1,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+  saveButton: {
+    backgroundColor: "#4cd964",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 })
 
