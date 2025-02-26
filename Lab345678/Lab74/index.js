@@ -253,8 +253,8 @@ const HomeScreen = ({ navigation }) => {
 
 const ProfileScreen = () => {
   const [isEditing, setIsEditing] = useState(false)
-  const [name, setName] = useState("John Doe")
-  const [age, setAge] = useState("28")
+  const [name, setName] = useState("Xuan Thuan")
+  const [age, setAge] = useState("20")
 
   const handleSave = () => {
     setIsEditing(false)
