@@ -33,7 +33,7 @@ const EditUserScreen = ({ route, navigation }) => {
     // Hàm gọi API để cập nhật thông tin người dùng
     const updateUser = async () => {
         try {
-            await axios.put(`http://192.168.1.8:5000/user/${user.id}`, {
+            await axios.put(`http://172.16.54.0:5000/user/${user.id}`, {
                 name,
                 date,
                 avatar,

@@ -29,7 +29,7 @@ const CreateUserScreen = ({ navigation }) => {
 
         try {
             const response = await axios.post(
-                'http://192.168.1.8:5000/user/',
+                'http://172.16.54.0:5000/user/',
                 { name, date: formattedDate, avatar },
                 { headers: { 'Content-Type': 'application/json' } }
             );

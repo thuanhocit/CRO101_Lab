@@ -11,7 +11,7 @@ const UserListScreen = ({ navigation }) => {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://192.168.1.8:5000/user/');
+            const response = await axios.get('http://172.16.54.0:5000/user/');
             console.log("Dữ liệu nhận được:", response.data);
             setUsers(response.data);
         } catch (error) {
@@ -28,7 +28,7 @@ const UserListScreen = ({ navigation }) => {
     const deleteUser = async (id) => {
         console.log('ID cần xóa:', id);
         try {
-            await axios.delete(`http://192.168.1.8:5000/user/${id}`);
+            await axios.delete(`http://172.16.54.0:5000/user/${id}`);
             Alert.alert('Thành công', 'Xóa tài khoản thành công!');
             fetchUsers();
         } catch (error) {
